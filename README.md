@@ -4,6 +4,34 @@
 
 A portable, open-source governance foundation for Claude Code and AI-assisted software development.
 
+## Get started in 4 steps
+**You need:** Python 3.8+ (`python3 --version`, Windows `py -3 --version`), Git (only to clone), and Claude Code in VS Code (only for step 4).
+**Cloning does not activate anything.** Rules become active when you run `install.py` and start a new Claude Code session.
+
+**1. Download or clone** (or unzip the ZIP from [Releases](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases); in VS Code: `Git: Clone` from the Command Palette)
+```bash
+git clone https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT.git
+cd AI-GOVERNANCE-STARTER-KIT
+```
+**2. Preview, then install** (the dry run writes nothing; add `--hooks` only if you want the optional START/END hook)
+
+| macOS / Linux | Windows (PowerShell) |
+|---|---|
+| `python3 install.py --dry-run` | `py -3 install.py --dry-run` |
+| `python3 install.py` | `py -3 install.py` |
+
+**3. Verify the files**
+
+| macOS / Linux | Windows (PowerShell) |
+|---|---|
+| `python3 verify.py` | `py -3 verify.py` |
+
+**4. Confirm in VS Code:** restart VS Code, open Claude Code in a new conversation in any project and ask
+**"What is the AI Governance canary?"** Expected answer: `AIGOV-KIT-1.0.0-LOADED`.
+
+Your existing configuration is preserved and everything can be undone with `python3 install.py --rollback`.
+New to this? The **[illustrated step-by-step installation guide](docs/INSTALLATION-GUIDE.md)** covers cloning in VS Code, ZIP install, expected output, troubleshooting, updating and uninstalling.
+
 ## Why this exists
 AI coding assistants are powerful, but each session starts from scratch. Without shared rules you end up
 re-explaining the same expectations in every repository, and results drift: unrequested changes, lost context
@@ -41,25 +69,6 @@ You never move the repository into `~/.claude`. Anything it would replace is bac
 
 **Advisory vs. enforced.** The rules are instructions to a language model: they steer behavior but cannot guarantee it.
 The deterministic parts are the installer, the verifier and the optional hook (which only injects text). Nothing here sandboxes the assistant.
-
-## Quick start
-Requirements: Python 3.8+, Git, Claude Code. This repository is public.
-
-**macOS / Linux**
-```bash
-git clone https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT.git
-cd AI-GOVERNANCE-STARTER-KIT
-python3 install.py --dry-run    # show what would change; writes nothing
-python3 install.py              # install (add --hooks for the optional START/END hook)
-python3 verify.py
-```
-**Windows (PowerShell)**: identical, with `py -3` instead of `python3`.
-
-**Cloning from VS Code:** Command Palette (`Ctrl/Cmd+Shift+P`) → `Git: Clone` → paste
-`https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT.git` → open the folder, then run the commands above in the
-integrated terminal. Finally restart VS Code so Claude Code starts a new session.
-
-No Git? Download the ZIP from the [Releases page](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases) and run the same commands.
 
 ## Verify installation
 `python3 verify.py` reports four separate levels with explicit statuses

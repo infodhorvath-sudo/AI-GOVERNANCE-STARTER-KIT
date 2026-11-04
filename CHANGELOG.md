@@ -2,6 +2,13 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+### Added
+- `docs/INSTALLATION-GUIDE.md`: illustrated step-by-step guide (clone in VS Code or ZIP, expected output, troubleshooting, update, uninstall) and `docs/assets/` terminal renderings of real output.
+- README "Get started in 4 steps".
+### Changed
+- Installer wording only: clearer dry-run/install messages (no behavior change).
+
 ## [1.0.0] - 2026-11-04
 First public release.
 ### Added

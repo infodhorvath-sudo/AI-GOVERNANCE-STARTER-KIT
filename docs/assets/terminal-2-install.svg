@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="947" height="346" viewBox="0 0 947 346" role="img" aria-label="Terminal output of: python3 install.py">
+<rect width="947" height="346" rx="8" fill="#0d1117"/><rect width="947" height="30" rx="8" fill="#161b22"/><rect y="20" width="947" height="10" fill="#161b22"/>
+<circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
+<text x="473" y="20" fill="#8b949e" font-family="Menlo,Consolas,monospace" font-size="12" text-anchor="middle">terminal (real output, your home folder shown as ~)</text>
+<text x="16" y="54" fill="#e6edf3" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve"><tspan fill="#3fb950">$</tspan> python3 install.py</text>
+<text x="16" y="72" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">OS: Darwin 25.5.0 | Python 3.9.6</text>
+<text x="16" y="90" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">  claude  found</text>
+<text x="16" y="108" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">  git     found</text>
+<text x="16" y="126" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">  code    not on PATH - optional</text>
+<text x="16" y="144" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">Claude config dir: ~/.claude  (will be created)</text>
+<text x="16" y="162" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve"></text>
+<text x="16" y="180" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">create  ai-governance/ (10 files)</text>
+<text x="16" y="198" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">create  rules/ai-governance-coding.md</text>
+<text x="16" y="216" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">create  skills/ponytail</text>
+<text x="16" y="234" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">create  CLAUDE.md (managed block)</text>
+<text x="16" y="252" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">skip    hook (optional; add --hooks to register START/END trigger)</text>
+<text x="16" y="270" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve"></text>
+<text x="16" y="288" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">Installed. Undo record and backups of anything replaced: ~/.claude/ai-governance-kit-backups/20261104-180654</text>
+<text x="16" y="306" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">Rollback: python3 install.py --rollback   (see docs/ROLLBACK.md)</text>
+<text x="16" y="324" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">Next: restart VS Code / start a new Claude Code session, then run: python3 verify.py</text>
+</svg>

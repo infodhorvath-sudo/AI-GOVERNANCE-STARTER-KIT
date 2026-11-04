@@ -217,7 +217,7 @@ def do_claude_md(r, prefix):
         new = cur + sep + block
     if new == cur:
         return r.log("ok      CLAUDE.md managed block up to date")
-    r.log("%s CLAUDE.md (managed block; existing content preserved)" % ("update " if cur else "create "))
+    r.log("update  CLAUDE.md (managed block added; your content preserved)" if cur else "create  CLAUDE.md (managed block)")
     r.changes.append("claude.md")
     if not r.dry:
         r.write_file(path, new.encode("utf-8"))
@@ -374,7 +374,7 @@ def main():
     elif a.dry_run:
         print("Dry run only. Nothing was written. Re-run without --dry-run to apply.")
     else:
-        print("Installed. Backup of replaced files: %s" % r.bdir)
+        print("Installed. Undo record and backups of anything replaced: %s" % r.bdir)
         print("Rollback: python3 install.py --rollback   (see docs/ROLLBACK.md)")
         print("Next: restart VS Code / start a new Claude Code session, then run: python3 verify.py")
     return 0
