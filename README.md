@@ -11,6 +11,8 @@ A portable, open-source governance foundation for Claude Code and AI-assisted so
 ## Get started in 4 steps
 ![Four-step installation workflow: get the kit, install, verify the installed files, and confirm the rules in Claude Code.](docs/assets/branding/ai-governance-installation.png)
 
+**The illustration mirrors the four steps:** download, install, verify files, then confirm in Claude Code.
+
 **You need:** Python 3.8+ (`python3 --version`, Windows `py -3 --version`), Git (only to clone), and Claude Code in VS Code (only for step 4).
 **Cloning does not activate anything.** Rules become active when you run `install.py` and start a new Claude Code session.
 
