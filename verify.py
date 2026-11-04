@@ -107,11 +107,11 @@ def package():
             bad_py.append(p.name)
     check(not bad_py, "all Python scripts parse %s" % (bad_py or ""))
     # imports: none inside payload docs (modules are referenced as plain paths) => no cycles, no broken refs
-    crlf = [p.relative_to(KIT).as_posix() for p in files if b"\r\n" in p.read_bytes()]
+    crlf = [p.relative_to(KIT).as_posix() for p in files if p.suffix != ".png" and b"\r\n" in p.read_bytes()]
     check(not crlf, "no CRLF line endings (a CRLF checkout breaks manifest hashes and shebangs) %s" % (crlf[:3] or ""))
     ga = KIT / ".gitattributes"
     if (KIT / ".git").exists() or ga.exists():
-        check(ga.exists() and "eol=lf" in ga.read_text(), ".gitattributes forces LF checkout")
+        check(ga.exists() and "eol=lf" in ga.read_text() and "png binary" in ga.read_text(), ".gitattributes forces LF for text and marks PNG binary")
     imports = [(p.name, l) for p in (KIT / "payload").rglob("*.md") for l in p.read_text(encoding="utf-8").splitlines()
                if l.startswith("@")]
     check(not imports, "payload files contain no @imports (no cycles / broken imports possible) %s" % (imports[:2] or ""))

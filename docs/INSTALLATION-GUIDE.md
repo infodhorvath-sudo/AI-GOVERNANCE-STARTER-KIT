@@ -12,9 +12,14 @@ session handoff). The rules are written instructions for the AI model: they guid
 **What happens to your existing setup:** nothing is overwritten. `install.py --dry-run` first shows the plan without writing. The real run
 adds one clearly marked block to `~/.claude/CLAUDE.md`, copies kit files into their own folders, backs up whatever it replaces, and can be fully undone.
 
-> About the images: the three terminal pictures below are rendered from **real output** of the commands in this guide (run in a throwaway home
+> About the images: the green graphics are branded illustrations, not program output. The three terminal pictures below are rendered from **real output** of the commands in this guide (run in a throwaway home
 > directory; your home folder is displayed as `~`). The two diagrams are **illustrative**, not screenshots. No screenshot of an authenticated
 > Claude Code session is included; see [step 6](#6-confirm-claude-code-loads-the-rules) for what you should see.
+
+## Two ways to get the kit
+![Two installation options: clone with Git or download the ZIP release.](assets/branding/ai-governance-setup-methods.png)
+
+Both give you the same files and the same `install.py`; pick what suits you. Cloning (recommended) makes updates a one-line `git pull`; the ZIP needs no Git. Details in [step 2](#2-get-the-kit).
 
 ## 1. Prerequisites
 | Need | Check with | Notes |
