@@ -2,6 +2,15 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+Applies to the next versioned release.
+### Changed
+- Release ZIPs are now lightweight installation packages (about 60 KB instead of 4.4 MB): `docs/assets/branding/` is omitted, README/installation-guide images become links to their online copies, and the ZIP carries a manifest that lists exactly its own contents (`tools/make-release.py --zip`). Git keeps all images. The v1.0.0 and v1.0.1 ZIPs are unchanged.
+- Installation graphic labels corrected to match the real steps ("3 VERIFY FILES", "4 CONFIRM IN CLAUDE CODE").
+- `verify.py` also checks that every image referenced by README and the installation guide exists; `.gitattributes` marks PNG as binary.
+### Added
+- Green visual identity: hero, architecture, installation and setup-methods graphics in README and installation guide; social preview image.
+
 ## [1.0.1] - 2026-11-04
 ### Fixed
 - **Rules silently not loaded when the Claude config path contains a space** (typical for Windows profile folders that contain a space): the managed `@import` was an absolute path and a space ended it. The import now uses the documented `~/` form under the home folder (verified in Claude Code with spaces and Unicode) and a backslash-escaped absolute path elsewhere. Existing installs are migrated in place by the next `install.py`.

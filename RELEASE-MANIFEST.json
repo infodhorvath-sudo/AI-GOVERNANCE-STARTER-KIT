@@ -5,10 +5,10 @@
     ".github/ISSUE_TEMPLATE/feature_request.md": "686b7e17bef50f02bc9e20d8bcdf5d95774c57790a1a012412b1d75f84438198",
     ".github/PULL_REQUEST_TEMPLATE.md": "540efdc922d65332f59952628fbb9ba6d9b8947cc06b9f464b613f2fea4da5f1",
     ".gitignore": "0af102f674c7870b36372c4a423e2699a6f0932074d626adc86556c102c940be",
-    "CHANGELOG.md": "b95161825ea7897d47cedcd6ba2b45981e00f108b571b795404ff4ac065d1bd0",
-    "CONTRIBUTING.md": "ffeb066b2930b9266afcf1fcdd51f12cd5d6a055c564d17ec4c51f6a65a03b9f",
+    "CHANGELOG.md": "412ad39e6ca165fb2165444bab9cab3aac216489ffec07bd1a9683f5c8c1f9c7",
+    "CONTRIBUTING.md": "4bcd853ac13b434e353d1ea8440b69ce19d3817d14fc7e838ac5047113b14544",
     "LICENSE": "cc1d117b2c6c48dc7b1464a03575ff4d3454a1c82446761ba2da1d372ef33964",
-    "README.md": "94ade7edbabb036ca487249a15162f5bf7059e6e5914eca0128cdb51768d53c0",
+    "README.md": "84d73cbf9315fa4ff2103ecacd63773a91a2143952626be960fa98b6715563ce",
     "SECURITY.md": "80293aea6ce783d777112a14570674d6ee104c94f9d474074638a9b5fcac3dad",
     "THIRD-PARTY-NOTICES.md": "48fb87366b8a640362ea24a6bd2904dd5caedd28aec689c2a1b9245e084ef043",
     "VERSION": "44e161e4495cac2cf7858043e9e6418e9579f0ddcfae826f9a372622968ce066",
@@ -18,7 +18,7 @@
     "docs/VERIFY-IN-VSCODE.md": "15239ac4eea329897948816efb83a3b672f7b377a8ced9e3a5073554df702296",
     "docs/assets/branding/ai-governance-architecture.png": "429d9331e64d0343c91326f7a94793d83ef5a2718c3e3821bdaee8b939b00cfa",
     "docs/assets/branding/ai-governance-hero-banner.png": "2dc3bd36e0ea7deb308daaf05143c8ccfff149600be68e09b0537f02ac185c60",
-    "docs/assets/branding/ai-governance-installation.png": "b9db8b97ab96501c5050640cd99b4b06f7f81ad1efd99259d2054dfc68880bf0",
+    "docs/assets/branding/ai-governance-installation.png": "60ad8522b1498bdc24309c180246f8300f9765613bab907b95f448b5e7d97154",
     "docs/assets/branding/ai-governance-setup-methods.png": "54cf7ab49a721ee739f3f724253fc882f099028fea1975d27042cbb05c1566af",
     "docs/assets/branding/ai-governance-social-preview.png": "a0a68ac2f046843b9fe5db9db66bcafb203229e44cdfc2e044b0c115d1ef7a85",
     "docs/assets/terminal-1-dry-run.svg": "dc6f322b833785a408876deb9a2c92fe5490683f5c1df3fc97fd41ab669e4444",
@@ -39,8 +39,8 @@
     "payload/templates/project/.ai/SESSION-LOG.md": "6479b821a298db871580c775eaf62814bcbd9710f0ff32e0ea2ed6d2c12dfdd8",
     "payload/templates/project/.ai/STATE.md": "c695447b5535a484e31354940f475da5db7bb18c1a8dc01299b10f75ffd2f17a",
     "payload/templates/project/CLAUDE.md": "d15c45c8605ad16a882da92cba0ec029aede96c0161ad54e334a3d4756da4898",
-    "tools/make-release.py": "5a2aeff7323d2f89771b1cc990b366091aeca8648fc64ee7b7c5c45facdf8812",
-    "verify.py": "afa1f2a29255d6aa17faa3eb722e3416248e93e7707590e513898e53b6b7945a"
+    "tools/make-release.py": "28262dd600e8ae3fd0880156a644e6eba35b5070cb5efb9afd2f412b06c1d207",
+    "verify.py": "3673166299911c821a2b039ae98296676c2a7aeaeb1b0200c96b3cbdfe5aec53"
   },
   "name": "AI-GOVERNANCE-STARTER-KIT",
   "version": "1.0.1"

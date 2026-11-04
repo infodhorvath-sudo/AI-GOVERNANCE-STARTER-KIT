@@ -112,6 +112,13 @@ def package():
     ga = KIT / ".gitattributes"
     if (KIT / ".git").exists() or ga.exists():
         check(ga.exists() and "eol=lf" in ga.read_text() and "png binary" in ga.read_text(), ".gitattributes forces LF for text and marks PNG binary")
+    broken = []
+    for md in ("README.md", "docs/INSTALLATION-GUIDE.md"):
+        base = (KIT / md).parent
+        for ref in re.findall(r"!\[[^\]]*\]\(([^)\s]+)\)", (KIT / md).read_text(encoding="utf-8")):
+            if not ref.startswith("http") and not (base / ref).exists():
+                broken.append("%s -> %s" % (md, ref))
+    check(not broken, "every image referenced by README and the installation guide exists %s" % (broken[:3] or ""))
     imports = [(p.name, l) for p in (KIT / "payload").rglob("*.md") for l in p.read_text(encoding="utf-8").splitlines()
                if l.startswith("@")]
     check(not imports, "payload files contain no @imports (no cycles / broken imports possible) %s" % (imports[:2] or ""))

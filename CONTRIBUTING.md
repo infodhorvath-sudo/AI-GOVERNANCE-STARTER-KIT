@@ -9,7 +9,7 @@ Open an issue (templates provided). For bugs include OS, Python version, the com
 ## Pull requests
 1. Fork, create a branch, keep the change small and on one topic.
 2. Run `python3 verify.py` (must show 0 FAIL).
-3. If you changed any shipped file: `python3 tools/make-release.py` to refresh `RELEASE-MANIFEST.json`, and commit it.
+3. If you changed any shipped file: `python3 tools/make-release.py` to refresh `RELEASE-MANIFEST.json`, and commit it. Maintainers build the lightweight install ZIP with `python3 tools/make-release.py --zip OUT` (decorative images omitted, own manifest).
 4. Describe what changed and how you tested it.
 
 ## Expectations
