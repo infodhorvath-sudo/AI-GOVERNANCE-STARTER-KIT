@@ -9,6 +9,7 @@ Applies to the next versioned release.
 - Installation graphic labels corrected to match the real steps ("3 VERIFY FILES", "4 CONFIRM IN CLAUDE CODE").
 - `verify.py` also checks that every image referenced by README and the installation guide exists; `.gitattributes` marks PNG as binary.
 ### Added
+- "Install with Claude Code": one copy-and-paste prompt in the README plus `docs/INSTALL-WITH-CLAUDE.md` (guided, permission-prompt-respecting installation; no version numbers hardcoded). `verify.py` checks the prompt stays identical in both places, names the official URL and contains no pipe-to-shell or version number.
 - Green visual identity: hero, architecture, installation and setup-methods graphics in README and installation guide; social preview image.
 
 ## [1.0.1] - 2026-11-04

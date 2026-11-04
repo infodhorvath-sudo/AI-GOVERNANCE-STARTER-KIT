@@ -119,6 +119,16 @@ def package():
             if not ref.startswith("http") and not (base / ref).exists():
                 broken.append("%s -> %s" % (md, ref))
     check(not broken, "every image referenced by README and the installation guide exists %s" % (broken[:3] or ""))
+    try:
+        rd = (KIT / "README.md").read_text(encoding="utf-8")
+        gd = (KIT / "docs/INSTALL-WITH-CLAUDE.md").read_text(encoding="utf-8")
+        pr = re.search(r"## Install with Claude Code.*?```text\n(.*?)\n```", rd, re.S).group(1)
+        pg = re.search(r"## The prompt.*?```text\n(.*?)\n```", gd, re.S).group(1)
+        ok = (pr == pg and "https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT.git" in pr
+              and not re.search(r"\d+\.\d+\.\d+|curl|(?<![-\w])sudo(?![-\w])|\| *(ba)?sh", pr))
+    except (AttributeError, OSError):
+        ok = False
+    check(ok, "Install-with-Claude prompt: identical in README and guide, official URL, no version number, no curl/sudo/pipe-to-shell")
     imports = [(p.name, l) for p in (KIT / "payload").rglob("*.md") for l in p.read_text(encoding="utf-8").splitlines()
                if l.startswith("@")]
     check(not imports, "payload files contain no @imports (no cycles / broken imports possible) %s" % (imports[:2] or ""))

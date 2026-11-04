@@ -2,6 +2,8 @@
 
 For people who have never used this kit. About 10 minutes. Everything happens on your own computer.
 
+**Prefer to let Claude Code do it?** Use the copy-and-paste prompt in [INSTALL-WITH-CLAUDE.md](INSTALL-WITH-CLAUDE.md). This guide is the manual route.
+
 **What the kit does:** it installs a small set of shared engineering rules into Claude Code's *user-level*
 configuration, so every project you open inherits them (safe Git habits, "smallest correct change", cost-aware model use, an optional
 session handoff). The rules are written instructions for the AI model: they guide it, they do not force it.
