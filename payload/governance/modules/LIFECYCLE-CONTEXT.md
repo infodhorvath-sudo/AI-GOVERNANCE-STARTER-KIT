@@ -3,12 +3,20 @@
 On-demand module of the Global AI Governance (see `GLOBAL-RULES.md`). Read when
 the user says START or END, asks for a handoff, or a context reset is near.
 
-# 1. TRIGGERS
+# 1. WHEN THIS CONVENTION APPLIES
 
-Standalone commands (case-insensitive): `START` / `start session` and
-`END` / `finish session`. The same words inside ordinary sentences are not
-triggers. The optional hook (installed with `install.py --hooks`) injects a
-reminder to run this module when the prompt is exactly one of these commands.
+Opt-in. It applies only in a project that has `.ai/STATE.md` (bootstrapped by
+the kit or adopted by the team). Elsewhere `start` and `end` are ordinary words:
+do not create `.ai/` files because the user typed them, do not duplicate or
+replace a workflow the user already has (their own `start`/`end` skills or
+commands, `QUEUE.md`/`HANDOFF.md`, ...), and ask once if it is unclear which
+workflow is meant.
+
+In an adopted project, the standalone commands (case-insensitive) are `START` /
+`start session` and `END` / `finish session`; the same words inside ordinary
+sentences are not triggers. The optional hook (`install.py --hooks`) injects a
+reminder only when the prompt is exactly one of these commands **and** the
+current project has `.ai/STATE.md`.
 
 # 2. START SESSION
 
@@ -21,8 +29,8 @@ reminder to run this module when the prompt is exactly one of these commands.
 6. If state is coherent, an Exact Next Action is recorded and nothing blocks
    (no safety gate, missing information or conflicting priority), start it
    without asking permission.
-7. If the project has no `.ai/` state, say so; do not invent state. Offer to
-   create it with `python3 ~/.claude/ai-governance/bootstrap-project.py .`.
+7. If the project has no `.ai/` state it has not adopted this convention: say so,
+   do not invent state, and offer `bootstrap-project.py` only if the user wants it.
 
 # 3. END SESSION
 

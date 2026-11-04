@@ -23,4 +23,4 @@
      push the current branch to its upstream and verify sync. -->
 
 ## Session state
-Durable handoff lives in `.ai/STATE.md` (send `START` to resume, `END` to close).
+This project uses the Starter Kit session convention (opt-in): durable handoff lives in `.ai/STATE.md` (send `START` to resume, `END` to close). Remove `.ai/STATE.md` and this section to opt out; your own start/end workflow always takes precedence.

@@ -112,6 +112,7 @@ class Run:
             n += 1
             self.bdir = cd / "ai-governance-kit-backups" / ("%s-%d" % (self.stamp, n))
         self.entries, self.made_dirs, self.warnings, self.changes = [], [], [], []
+        self.notes = []
 
     def log(self, msg):
         print(("[dry-run] " if self.dry else "") + msg)
@@ -250,6 +251,15 @@ def do_skills(r, prefix):
             r.warnings.append("skills/%s already exists (not from this kit); left untouched" % sk.name)
             continue
         sync(r, "skills/" + sk.name, dst, want, True, dst)
+
+
+def do_notes(r):
+    """Advisory only (names of existing items, never their contents): possible workflow overlap."""
+    found = ["skills/%s" % n for n in ("start", "end") if (r.cd / "skills" / n).exists()]
+    found += ["commands/%s.md" % n for n in ("start", "end") if (r.cd / "commands" / (n + ".md")).exists()]
+    if found:
+        r.notes.append("you already have %s. Your workflow takes precedence: the kit's START/END convention applies only "
+                       "in a project that contains .ai/STATE.md (never created automatically) and is dormant elsewhere." % ", ".join(found))
 
 
 def write_state(r):
@@ -453,6 +463,7 @@ def main():
         do_rules(r, prefix)
         if not a.no_skills:
             do_skills(r, prefix)
+        do_notes(r)
         if gov_ok:
             write_state(r)
         do_claude_md(r, imp_path)
@@ -473,6 +484,8 @@ def main():
     r.finish()
     for w in r.warnings:
         print("WARNING: " + w)
+    for n in r.notes:
+        print("NOTE: " + n)
     print()
     if not r.changes:
         print("Nothing to change - already up to date.")

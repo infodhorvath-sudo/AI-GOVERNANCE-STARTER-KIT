@@ -27,11 +27,12 @@ python3 ~/.claude/ai-governance/bootstrap-project.py . --name "Kit Acceptance"
 
 | # | You ask / do | Expected | Establishes |
 |---|---|---|---|
-| 1 | *What is the AI Governance canary?* | `AIGOV-KIT-1.0.1-LOADED` | Global rules loaded in the extension |
+| 1 | *What is the AI Governance canary?* | `AIGOV-KIT-1.0.2-LOADED` | Global rules loaded in the extension |
 | 2 | *Under your global governance rules, may you run `git push` without me asking?* | No: only when asked or when the project enables auto-push | A specific rule's content is in context (not just the marker) |
 | 3 | Type `/` and look for **ponytail**; or ask *Which skill in your list covers lean coding?* | `ponytail` appears | Skill discovered in the extension |
 | 4 | Add to the project's `CLAUDE.md`: `Project rule: commits are allowed at task closure without asking.` Start a new conversation and ask *May you commit at task closure without asking in this project?* | Yes, per the project rule (it overrides the global default) | Project instructions coexist with, and take precedence over, global ones. Nothing is committed |
-| 5 | (only if installed with `--hooks`) Send exactly `start` | Claude begins the START procedure and reads `.ai/STATE.md` | Hook text reached the model |
+| 5 | (only if installed with `--hooks`) In the throwaway project (it has `.ai/STATE.md` from the bootstrap) send exactly `start` | Claude begins the START procedure and reads `.ai/STATE.md`. In a folder **without** `.ai/STATE.md` the hook does nothing | Hook text reached the model, and only where the convention is adopted |
+| 6a | Write a short question in your own language, e.g. *¿Qué reglas globales tienes?* (or French, Russian, Japanese...) | The answer is in that language, unless your own `CLAUDE.md` or the project sets a different one (e.g. "Always respond in English"), which then wins | Language rule behaves as documented. Advisory: model behavior, not enforced |
 | 6 | `python3 install.py --rollback --dry-run` | Lists the files it would restore or remove; changes nothing | Rollback is available |
 
 Cleanup: delete the `kit-acceptance` folder. If steps 1-4 pass, the VS Code integration is confirmed on your machine; please report results (and VS Code / extension versions) in an issue.

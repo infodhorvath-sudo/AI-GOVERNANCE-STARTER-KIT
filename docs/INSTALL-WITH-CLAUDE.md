@@ -33,8 +33,8 @@ anything looks unsafe or unexpected.
 5. Run python3 install.py --dry-run and show me the plan. Proceed only if every change is
    inside my Claude config folder (ai-governance/, rules/ai-governance-coding.md,
    skills/ponytail, and one managed block added to CLAUDE.md with my existing content
-   preserved) and there are no WARNING lines about my existing files. Otherwise stop and ask
-   me.
+   preserved) and there are no WARNING lines about my existing files (NOTE lines are
+   informational: report them to me). Otherwise stop and ask me.
 6. If safe, run python3 install.py. Do not use --force or --hooks, do not read credentials
    or authentication files, and do not modify any of my projects.
 7. Run python3 verify.py again and confirm that the global rules and the ponytail skill are

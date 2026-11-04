@@ -129,6 +129,18 @@ def package():
     except (AttributeError, OSError):
         ok = False
     check(ok, "Install-with-Claude prompt: identical in README and guide, official URL, no version number, no curl/sudo/pipe-to-shell")
+    gr = (KIT / "payload/governance/GLOBAL-RULES.md").read_text(encoding="utf-8")
+    gr = " ".join(gr.split())  # unwrap line breaks
+    lang = gr[gr.index("# 12. LANGUAGE"):]
+    langs = r"Spanish|French|Russian|Japanese|German|Chinese|Portuguese|Italian|Korean|Arabic"
+    check(all(k in lang for k in ("language-neutral", "explicit language request", "established personal and project language preferences",
+                                  "language of the user's message", "Never impose English-only", "exactly as they are", "code comments"))
+          and not re.search(langs, lang) and "Reply in the language the user writes in" not in gr
+          and "default to clear technical English" not in gr,
+          "language policy text (static): explicit request > established preference > message language, never English-only, code untranslated, per-artifact language, no language list")
+    check("BASELINE" in gr and "Existing developer and project workflows must be respected" in gr and "Claude Code documents no formal precedence" in gr
+          and "opt-in" in gr and "Never create `.ai/`" in gr and "QUEUE.md" in gr,
+          "baseline/precedence and opt-in handoff policy text present (static)")
     imports = [(p.name, l) for p in (KIT / "payload").rglob("*.md") for l in p.read_text(encoding="utf-8").splitlines()
                if l.startswith("@")]
     check(not imports, "payload files contain no @imports (no cycles / broken imports possible) %s" % (imports[:2] or ""))
@@ -150,6 +162,20 @@ def package():
 
 
 # ---------------------------------------------------------------- shared installed-state check
+_HD = []
+
+
+def hook_dirs():
+    """(project with .ai/STATE.md, project without), created once in a temp dir."""
+    if not _HD:
+        t = Path(tempfile.mkdtemp(prefix="kit-hookdirs-"))
+        (t / "adopted" / ".ai").mkdir(parents=True)
+        (t / "adopted" / ".ai" / "STATE.md").write_text("# state\n")
+        (t / "plain").mkdir()
+        _HD.extend([t / "adopted", t / "plain"])
+    return _HD[0], _HD[1]
+
+
 def installed_state(cd, expect_hook=None, home=None):
     imp_re = re.compile(r"^@((?:\\ |\S)+)", re.M)
     md = cd / "CLAUDE.md"
@@ -183,10 +209,15 @@ def installed_state(cd, expect_hook=None, home=None):
     if expect_hook is True or (expect_hook is None and cmds):
         check(len(cmds) == 1, "START/END hook registered exactly once")
         script = cd / "ai-governance" / "hooks" / "session-lifecycle-trigger.py"
-        r1 = subprocess.run([PY, str(script)], input='{"prompt":"start"}', capture_output=True, text=True)
-        r2 = subprocess.run([PY, str(script)], input='{"prompt":"please start the server"}', capture_output=True, text=True)
-        check(r1.returncode == 0 and "SESSION_LIFECYCLE_START_TRIGGER" in r1.stdout, "hook fires on exact 'start'")
+        adopted, plain = hook_dirs()
+        pay = lambda prompt, cwd: json.dumps({"prompt": prompt, "cwd": str(cwd)})
+        r1 = subprocess.run([PY, str(script)], input=pay("start", adopted), capture_output=True, text=True)
+        r2 = subprocess.run([PY, str(script)], input=pay("please start the server", adopted), capture_output=True, text=True)
+        r3 = subprocess.run([PY, str(script)], input=pay("start", plain), capture_output=True, text=True)
+        check(r1.returncode == 0 and "SESSION_LIFECYCLE_START_TRIGGER" in r1.stdout, "hook fires on exact 'start' in a project that has .ai/STATE.md")
         check(r2.returncode == 0 and r2.stdout.strip() == "", "hook silent for ordinary sentences")
+        check(r3.returncode == 0 and r3.stdout.strip() == "" and not (plain / ".ai").exists(),
+              "hook silent for 'start' in a project WITHOUT .ai/STATE.md (never hijacks your own start workflow, creates nothing)")
     else:
         print("  %-30s optional START/END hook (install.py --hooks)" % "info")
 
@@ -383,7 +414,7 @@ def sandbox():
             installed_state(hm / ".claude", expect_hook=True, home=hm)
             cmd = json.loads((hm / ".claude" / "settings.json").read_text())["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"]
             if shutil.which(cmd.split()[0]):
-                p = subprocess.run(cmd, shell=True, input='{"prompt":"start"}', capture_output=True, text=True)
+                p = subprocess.run(cmd, shell=True, input=json.dumps({"prompt": "start", "cwd": str(hook_dirs()[0])}), capture_output=True, text=True)
                 check("SESSION_LIFECYCLE_START_TRIGGER" in p.stdout, "hook command string works through a shell with that path")
             else:
                 report("NOT TESTED", "hook command run through a shell (%s not on PATH)" % cmd.split()[0])
@@ -403,6 +434,34 @@ def sandbox():
                 hook_check(hm2, extra_env=env, label="[space in path] ")
         else:
             report("NOT TESTED", "real Claude Code loader (claude CLI not on PATH)")
+
+        print(" O. language/handoff compatibility (existing start/end skills, projects without .ai/)")
+        co = tmp / "compat"
+        seed_config(co)
+        (co / "CLAUDE.md").write_text("# mine\nAlways respond in English.\n")
+        for n in ("start", "end"):
+            (co / "skills" / n).mkdir()
+            (co / "skills" / n / "SKILL.md").write_text("---\nname: %s\n---\nMY %s WORKFLOW (QUEUE.md / HANDOFF.md)\n" % (n, n.upper()))
+        mine = snapshot(co / "skills")
+        r = inst(co, "--hooks")
+        check(r.returncode == 0 and snapshot(co / "skills") == {**mine, **{k: v for k, v in snapshot(co / "skills").items() if k.startswith("ponytail")}}
+              and (co / "skills" / "start" / "SKILL.md").read_text().startswith("---\nname: start"), "your own start/end skills are left untouched")
+        check("NOTE:" in r.stdout and "skills/start" in r.stdout and "WARNING" not in r.stdout and "MY START" not in r.stdout,
+              "installer prints an informational NOTE (names only, no contents) and no WARNING")
+        check((co / "CLAUDE.md").read_text().startswith("# mine\nAlways respond in English.\n"), "your existing 'Always respond in English' line is preserved verbatim")
+        hook = co / "ai-governance" / "hooks" / "session-lifecycle-trigger.py"
+        existing = tmp / "existing-no-ai"
+        existing.mkdir()
+        (existing / "QUEUE.md").write_text("queue\n")
+        (existing / "HANDOFF.md").write_text("handoff\n")
+        before_proj = snapshot(existing)
+        out = subprocess.run([PY, str(hook)], input=json.dumps({"prompt": "start", "cwd": str(existing)}), capture_output=True, text=True)
+        check(out.stdout.strip() == "" and snapshot(existing) == before_proj and not (existing / ".ai").exists(),
+              "project without .ai/: 'start' triggers nothing and no .ai/ files are created (QUEUE.md/HANDOFF.md workflow untouched)")
+        bp = tmp / "bootstrapped"
+        run([co / "ai-governance" / "bootstrap-project.py", bp, "--name", "B"])
+        out = subprocess.run([PY, str(hook)], input=json.dumps({"prompt": "start", "cwd": str(bp)}), capture_output=True, text=True)
+        check("SESSION_LIFECYCLE_START_TRIGGER" in out.stdout, "project created by the kit's bootstrap: opt-in handoff convention works as documented")
 
         print(" H. cross-platform handling (Windows: STATIC validation only, not executed on Windows)")
         spec = importlib.util.spec_from_file_location("kit_install", KIT / "install.py")
@@ -490,6 +549,8 @@ def hook_check(cd, extra_env=None, label=""):
     if not extra_env and cd != (Path.home() / ".claude").resolve():
         env["CLAUDE_CONFIG_DIR"] = str(cd)
     tmp = tempfile.mkdtemp(prefix="kit-hook-")
+    (Path(tmp) / ".ai").mkdir()
+    (Path(tmp) / ".ai" / "STATE.md").write_text("# state\n")
     seen = False
     try:
         p = subprocess.Popen(["claude", "-p", "start", "--output-format", "stream-json", "--verbose",

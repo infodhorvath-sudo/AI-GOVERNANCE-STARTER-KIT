@@ -4,7 +4,7 @@
 
 **One installation. Consistent standards. Every project.**
 
-Latest stable release: **v1.0.1** (see [CHANGELOG](CHANGELOG.md); `main` may be ahead of the latest release between releases).
+Latest stable release: **v1.0.2** (see [CHANGELOG](CHANGELOG.md); `main` may be ahead of the latest release between releases).
 
 A portable, open-source governance foundation for Claude Code and AI-assisted software development.
 
@@ -31,8 +31,8 @@ anything looks unsafe or unexpected.
 5. Run python3 install.py --dry-run and show me the plan. Proceed only if every change is
    inside my Claude config folder (ai-governance/, rules/ai-governance-coding.md,
    skills/ponytail, and one managed block added to CLAUDE.md with my existing content
-   preserved) and there are no WARNING lines about my existing files. Otherwise stop and ask
-   me.
+   preserved) and there are no WARNING lines about my existing files (NOTE lines are
+   informational: report them to me). Otherwise stop and ask me.
 6. If safe, run python3 install.py. Do not use --force or --hooks, do not read credentials
    or authentication files, and do not modify any of my projects.
 7. Run python3 verify.py again and confirm that the global rules and the ponytail skill are
@@ -74,7 +74,7 @@ cd AI-GOVERNANCE-STARTER-KIT
 | `python3 verify.py` | `py -3 verify.py` |
 
 **4. Confirm in VS Code:** restart VS Code, open Claude Code in a new conversation in any project and ask
-**"What is the AI Governance canary?"** Expected answer: `AIGOV-KIT-1.0.1-LOADED`.
+**"What is the AI Governance canary?"** Expected answer: `AIGOV-KIT-1.0.2-LOADED`.
 
 Your existing configuration is preserved and everything can be undone with `python3 install.py --rollback`.
 New to this? The **[illustrated step-by-step installation guide](docs/INSTALLATION-GUIDE.md)** covers cloning in VS Code, ZIP install, expected output, troubleshooting, updating and uninstalling.
@@ -92,13 +92,16 @@ instructions. Your projects keep their own rules; the global layer only supplies
 |---|---|---|
 | Global rules | Authority order, autonomy with safety gates, Git/evidence discipline, definition of done | Automatic, every project |
 | Coding rule | "Smallest correct solution" standard (Ponytail-style) | Automatic, every project |
-| Modules | Session lifecycle (START/END handoff), Git and safety, cost and review | On demand: read only when a task needs them |
+| Modules | Session handoff convention (opt-in per project), Git and safety, cost and review | On demand: read only when a task needs them |
 | `ponytail` skill | Third-party MIT skill for lean coding | On demand |
-| START/END hook | Reminder injected when you send exactly `start`/`end`/`finish` | Optional: `--hooks` |
+| START/END hook | Reminder when you send exactly `start`/`end`/`finish` in a project that has `.ai/STATE.md`; silent elsewhere | Optional: `--hooks` |
 | Project bootstrap | Creates a project `CLAUDE.md` and `.ai/STATE.md` + `SESSION-LOG.md` | Optional, per project |
 | Installer tooling | Dry-run, backup, safe merge, idempotent re-install, rollback, `verify.py` | You run it |
 
 Defaults are conservative: **no automatic commits or pushes**, no network access, no telemetry, no background process.
+
+**Multilingual by default.** The kit supports any language available through Claude Code. It respects your existing personal and project language preferences and otherwise follows the language of your conversation; code and commands are never translated.
+**Fits your setup.** Kit rules are a baseline that yields to your own instructions and workflows. Project lifecycle templates are optional, and your own `start`/`end` skills or handoff files keep working. Details: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
 ## How it works
 ![Global governance rules shared across multiple independent projects.](docs/assets/branding/ai-governance-architecture.png)
@@ -134,7 +137,7 @@ Exit code: `1` = a failure, `2` = not installed yet, `0` = all good.
 If the `claude` command is available, level 4 also asks the real Claude Code CLI what it loads (offline, no login, no model call): your user `CLAUDE.md`, the imported rules,
 the rule file, a project `CLAUDE.md`, the `ponytail` skill, and the hook if installed. That does **not** cover the VS Code extension or whether the model follows the rules.
 For those, restart VS Code, open Claude Code in a temporary project and run the short acceptance checklist in [docs/VERIFY-IN-VSCODE.md](docs/VERIFY-IN-VSCODE.md)
-(first question: **"What is the AI Governance canary?"** → `AIGOV-KIT-1.0.1-LOADED`, the installed kit version marker). `python3 verify.py --live` automates the model-level part with three tiny Haiku requests on your own login.
+(first question: **"What is the AI Governance canary?"** → `AIGOV-KIT-1.0.2-LOADED`, the installed kit version marker). `python3 verify.py --live` automates the model-level part with three tiny Haiku requests on your own login.
 
 ## Create a new project
 Optional; global rules already apply to every project without it.
@@ -144,7 +147,7 @@ python3 ~/.claude/ai-governance/bootstrap-project.py ./my-project --name "My Pro
 Windows: `py -3 "%USERPROFILE%\.claude\ai-governance\bootstrap-project.py" .\my-project --name "My Project"`
 
 Creates `CLAUDE.md` (commands, project rules, Git policy), `.ai/STATE.md` and `.ai/SESSION-LOG.md`. Never overwrites existing files and never copies the global rules.
-Then `START` resumes from `.ai/STATE.md` and `END` checkpoints it.
+In a project created this way `START` resumes from `.ai/STATE.md` and `END` checkpoints it; the convention is opt-in and never touches projects without `.ai/STATE.md`.
 
 ## Customize the rules
 - Your own global rules: put them in `~/.claude/CLAUDE.md` outside the managed block, or in your own file in `~/.claude/rules/`. Updates never touch these.

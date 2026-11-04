@@ -55,7 +55,7 @@ cd AI-GOVERNANCE-STARTER-KIT
 Keep the folder anywhere you like. You do **not** put it inside `~/.claude`.
 
 ### Option B: ZIP (no Git needed)
-1. Open the [Releases page](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases), download `AI-GOVERNANCE-STARTER-KIT-v1.0.1.zip` (optional: compare it with the published `.sha256` file).
+1. Open the [Releases page](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases), download `AI-GOVERNANCE-STARTER-KIT-v1.0.2.zip` (optional: compare it with the published `.sha256` file).
 2. Unzip it. You get a folder named `AI-GOVERNANCE-STARTER-KIT`.
 3. In VS Code: **File → Open Folder…**, choose that folder, then **Terminal → New Terminal**.
 
@@ -101,7 +101,7 @@ File checks cannot prove that Claude actually *reads* the rules, so test it:
 
 1. Open any project folder in VS Code and open Claude Code (a new conversation).
 2. Ask exactly: **What is the AI Governance canary?**
-3. Expected answer: `AIGOV-KIT-1.0.1-LOADED`
+3. Expected answer: `AIGOV-KIT-1.0.2-LOADED`
 
 ```mermaid
 sequenceDiagram
@@ -110,7 +110,7 @@ sequenceDiagram
   participant Cfg as ~/.claude/CLAUDE.md
   You->>Claude: What is the AI Governance canary?
   Claude->>Cfg: loads the kit's managed block and the rules it imports
-  Claude-->>You: AIGOV-KIT-1.0.1-LOADED
+  Claude-->>You: AIGOV-KIT-1.0.2-LOADED
 ```
 *Illustrative diagram of the expected result, not a screenshot of a real session.*
 

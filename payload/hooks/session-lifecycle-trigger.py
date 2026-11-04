@@ -14,6 +14,7 @@ import json
 import re
 import sys
 import unicodedata
+from pathlib import Path
 from typing import Optional
 
 START_EXACT = {"start"}
@@ -94,8 +95,9 @@ Do NOT merely say goodbye or acknowledge that the session is ending.
 Do NOT ask the user to manually perform routine Git actions that fall
 inside the autonomy envelope.
 
-If the active project has not yet been onboarded to the lifecycle/state
-system, do not invent state. Report that lifecycle onboarding is required."""
+This project has adopted the Starter Kit lifecycle convention (.ai/STATE.md exists).
+If the user has their own start/end workflow, follow theirs and do not run a second
+procedure."""
 
 START_CONTEXT = """SESSION_LIFECYCLE_START_TRIGGER
 
@@ -128,8 +130,9 @@ already contains it.
 Do NOT persist "current HEAD" as a self-referential field inside tracked
 STATE. Runtime Git facts must continue to come from Git itself.
 
-If the project is not lifecycle-enabled, report that instead of inventing
-project state."""
+This project has adopted the Starter Kit lifecycle convention (.ai/STATE.md exists).
+If the user has their own start/end workflow, follow theirs and do not run a second
+procedure."""
 
 
 def main() -> int:
@@ -140,6 +143,10 @@ def main() -> int:
         return 0
 
     if not isinstance(payload, dict):
+        return 0
+
+    cwd = payload.get("cwd")
+    if not isinstance(cwd, str) or not Path(cwd, ".ai", "STATE.md").is_file():
         return 0
 
     prompt = extract_prompt(payload)

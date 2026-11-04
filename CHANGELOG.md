@@ -2,13 +2,19 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow [SemVer](https://semver.org/).
 
-## [Unreleased]
-Applies to the next versioned release.
+## [1.0.2] - 2026-11-04
+Compatibility update from the first independent installation, plus the documentation, packaging and visual work merged since v1.0.1.
 ### Changed
+- **Language policy is multilingual and yields to you:** explicit request, then your established personal/project preference, then the language of your message. The kit no longer adds a competing language rule; handoffs to other agents are no longer forced into English. Code, commands, identifiers and paths are never translated.
+- **The kit is a baseline, not an authority:** your request, your project, and your own instructions/skills/workflows win; same-level conflicts are clarified, not resolved by file order.
+- **`start`/`end` handoff is opt-in:** applies only in a project containing `.ai/STATE.md`; the optional hook is silent elsewhere (it now checks the project directory); `.ai/` is never created because you typed `start`; your own `start`/`end` skills and `QUEUE.md`/`HANDOFF.md` workflows are not duplicated or replaced.
+- Installer prints an informational `NOTE:` if skills/commands named `start`/`end` already exist (names only).
+- Version and canary are `1.0.2` / `AIGOV-KIT-1.0.2-LOADED`.
 - Release ZIPs are now lightweight installation packages (about 60 KB instead of 4.4 MB): `docs/assets/branding/` is omitted, README/installation-guide images become links to their online copies, and the ZIP carries a manifest that lists exactly its own contents (`tools/make-release.py --zip`). Git keeps all images. The v1.0.0 and v1.0.1 ZIPs are unchanged.
 - Installation graphic labels corrected to match the real steps ("3 VERIFY FILES", "4 CONFIRM IN CLAUDE CODE").
 - `verify.py` also checks that every image referenced by README and the installation guide exists; `.gitattributes` marks PNG as binary.
 ### Added
+- `docs/COMPATIBILITY.md`; "Multilingual by default" and compatibility notes in the README; language and hook checks in the acceptance checklist; focused tests for the language policy text and for lifecycle opt-in.
 - "Install with Claude Code": one copy-and-paste prompt in the README plus `docs/INSTALL-WITH-CLAUDE.md` (guided, permission-prompt-respecting installation; no version numbers hardcoded). `verify.py` checks the prompt stays identical in both places, names the official URL and contains no pipe-to-shell or version number.
 - Green visual identity: hero, architecture, installation and setup-methods graphics in README and installation guide; social preview image.
 

@@ -1,7 +1,7 @@
 # GLOBAL AI GOVERNANCE (Starter Kit)
 
-Kit-Version: 1.0.1
-Governance-Canary: AIGOV-KIT-1.0.1-LOADED (harmless marker: if the user asks for the
+Kit-Version: 1.0.2
+Governance-Canary: AIGOV-KIT-1.0.2-LOADED (harmless marker: if the user asks for the
 governance canary, answer with exactly this value)
 
 Compact, always-loaded core of portable working rules for AI-assisted
@@ -12,19 +12,26 @@ continuity between sessions.
 
 ---
 
-# 1. AUTHORITY
+# 1. THESE RULES ARE A BASELINE
 
-Order of authority:
+These rules are defaults, not an authority above the developer. When anything
+else you have been given covers the same matter, follow that and treat the
+Starter Kit rule as the fallback:
 
-1. The user's explicit current instruction (platform safety rules still apply).
-2. Project governance: the project's `CLAUDE.md`, rules and canonical decisions.
-3. These global rules.
-4. Skills, plugins and tool defaults.
+1. the user's explicit current request,
+2. the project's own instructions (its `CLAUDE.md`, rules, conventions),
+3. the user's own personal instructions, skills, commands and workflows,
+4. these Starter Kit defaults,
+5. optional Starter Kit templates (used only where a project adopted them).
 
-Global rules say HOW to work; the project says WHAT is true for it. Do not
-reinterpret project rules with generic conventions, and do not reopen settled
+Existing developer and project workflows must be respected. Do not
+reinterpret project rules with generic conventions and do not reopen settled
 project decisions unless the user asks or new evidence shows a real conflict.
-Read project governance before material implementation.
+Claude Code documents no formal precedence between instruction files; if two
+instructions at the same level genuinely conflict and the intended relationship
+is unclear, ask the user once instead of guessing from file order. Platform
+safety rules always apply. Read project instructions before material
+implementation.
 
 ---
 
@@ -34,7 +41,8 @@ Detailed procedures live in `~/.claude/ai-governance/modules/`. Do NOT preload
 them. Read one only when the task enters its scope; ordinary low-risk work
 needs none.
 
-- START / END a session, handoff, context reset, checkpoint:
+- the Starter Kit session handoff convention (only in a project that adopted it),
+  context reset, checkpoint:
   `~/.claude/ai-governance/modules/LIFECYCLE-CONTEXT.md`
 - commit, push, merge, deploy, destructive or safety-sensitive action,
   unexpected repository state:
@@ -118,19 +126,26 @@ self-referential "current HEAD" in tracked files.
 
 ---
 
-# 8. SESSION LIFECYCLE
+# 8. SESSION CONTINUITY (opt-in per project)
 
-If the project has a `.ai/` directory, `.ai/STATE.md` is the canonical handoff
-(current state + an explicit Exact Next Action) and `.ai/SESSION-LOG.md` is the
-append-only history.
+Generic principle, always: do not rely on chat history alone for continuity;
+record durable state where the project already keeps it.
 
-- `START` (or "start session"): restore state, reconcile with Git, determine the
-  Exact Next Action, continue automatically when safe and unambiguous.
-- `END` (or "finish session"): validate, update STATE.md and the session log,
-  leave an exact resumable next action, verify final Git state.
+The Starter Kit's own convention is **opt-in**. It applies only in a project
+that has `.ai/STATE.md` (created by `bootstrap-project.py` or adopted by the
+team): `.ai/STATE.md` is the handoff (current state + Exact Next Action) and
+`.ai/SESSION-LOG.md` the append-only history.
 
-The words inside ordinary sentences are not triggers. Procedure:
-`LIFECYCLE-CONTEXT.md`. Chat history is never the only source of continuity.
+- In such a project, `START` / `END` (or "start session" / "finish session")
+  as a whole message mean: restore state, reconcile with Git and continue; or
+  validate, update STATE.md and the log, and leave an exact next action.
+- Everywhere else the words `start` and `end` are ordinary words. Never create
+  `.ai/` or any state file because the user typed them, and never run this
+  convention in addition to, or instead of, a workflow the user already has
+  (their own `start`/`end` skills or commands, `QUEUE.md`/`HANDOFF.md` files,
+  etc.). If unsure which workflow the user means, ask once.
+
+Procedure: `LIFECYCLE-CONTEXT.md`.
 
 ---
 
@@ -161,9 +176,16 @@ completion.
 
 ---
 
-# 12. LANGUAGE
+# 12. LANGUAGE (multilingual by default)
 
-Reply in the language the user writes in. Prompts and handoffs for other AI
-agents default to clear technical English. Project content (UI copy,
-localization, documents) keeps the project-defined language; code identifiers
-follow project standards.
+The Starter Kit is language-neutral: communicate in any natural language Claude
+supports. Follow an explicit language request when one applies; otherwise
+respect the user's established personal and project language preferences; when
+none is specified, answer in the language of the user's message. Never impose
+English-only communication and never override an existing language preference.
+
+Keep programming-language syntax, commands, identifiers and file paths exactly
+as they are, whatever the conversation language. The language used to talk to
+the developer may differ from the language of code comments, documentation, UI
+text or other deliverables: choose each from the user's instructions and the
+project's conventions.
