@@ -2,6 +2,8 @@
 
 **One installation. Consistent standards. Every project.**
 
+Latest stable release: **v1.0.1** (see [CHANGELOG](CHANGELOG.md); `main` may be ahead of the latest release between releases).
+
 A portable, open-source governance foundation for Claude Code and AI-assisted software development.
 
 ## Get started in 4 steps
@@ -27,7 +29,7 @@ cd AI-GOVERNANCE-STARTER-KIT
 | `python3 verify.py` | `py -3 verify.py` |
 
 **4. Confirm in VS Code:** restart VS Code, open Claude Code in a new conversation in any project and ask
-**"What is the AI Governance canary?"** Expected answer: `AIGOV-KIT-1.0.0-LOADED`.
+**"What is the AI Governance canary?"** Expected answer: `AIGOV-KIT-1.0.1-LOADED`.
 
 Your existing configuration is preserved and everything can be undone with `python3 install.py --rollback`.
 New to this? The **[illustrated step-by-step installation guide](docs/INSTALLATION-GUIDE.md)** covers cloning in VS Code, ZIP install, expected output, troubleshooting, updating and uninstalling.
@@ -80,9 +82,10 @@ The deterministic parts are the installer, the verifier and the optional hook (w
 4. runtime loading in Claude Code.
 
 Exit code: `1` = a failure, `2` = not installed yet, `0` = all good.
-File checks cannot prove the assistant actually loads the rules. After installing, restart VS Code, open Claude Code in any
-project and ask **"What is the AI Governance canary?"** — expected answer `AIGOV-KIT-1.0.0-LOADED`. Steps in
-[docs/VERIFY-IN-VSCODE.md](docs/VERIFY-IN-VSCODE.md); `python3 verify.py --live` automates it with three tiny Haiku requests on your own login.
+If the `claude` command is available, level 4 also asks the real Claude Code CLI what it loads (offline, no login, no model call): your user `CLAUDE.md`, the imported rules,
+the rule file, a project `CLAUDE.md`, the `ponytail` skill, and the hook if installed. That does **not** cover the VS Code extension or whether the model follows the rules.
+For those, restart VS Code, open Claude Code in a temporary project and run the short acceptance checklist in [docs/VERIFY-IN-VSCODE.md](docs/VERIFY-IN-VSCODE.md)
+(first question: **"What is the AI Governance canary?"** → `AIGOV-KIT-1.0.1-LOADED`, the installed kit version marker). `python3 verify.py --live` automates the model-level part with three tiny Haiku requests on your own login.
 
 ## Create a new project
 Optional; global rules already apply to every project without it.
@@ -98,8 +101,10 @@ Then `START` resumes from `.ai/STATE.md` and `END` checkpoints it.
 - Your own global rules: put them in `~/.claude/CLAUDE.md` outside the managed block, or in your own file in `~/.claude/rules/`. Updates never touch these.
 - Project rules: the project's `CLAUDE.md`. Claude Code combines user and project files; the kit tells Claude that project rules win, so keep them consistent.
 - Enable auto-push for one project: add the `Auto-push:` line described in `~/.claude/ai-governance/modules/AUTONOMY-GIT-SAFETY.md` to that project's `CLAUDE.md`.
-- Do not edit kit-owned files (`~/.claude/ai-governance/`, the kit's rule file, the kit's skill): the next install replaces them
-  (the old copy stays in the backup). To change kit defaults permanently, fork this repository.
+- You may edit kit files under `~/.claude/ai-governance/`, the kit's rule file or skill. The installer records what it installed;
+  on the next install a file you changed is **kept and reported** (never silently overwritten), files you added are never touched,
+  and `--force` replaces your version after backing it up. Prefer your own rules in `CLAUDE.md` (outside the managed block) or `rules/`, which never conflict.
+  To change defaults for everyone, fork this repository.
 
 ## Updating
 ```bash
@@ -108,8 +113,10 @@ python3 install.py --dry-run
 python3 install.py
 python3 verify.py
 ```
-Pulling changes nothing in your Claude config; only `install.py` does, and it is tested to update an earlier installation:
-kit-owned files are replaced, the managed block is refreshed in place (no duplicate import), your own content is preserved, and a new backup is made.
+Pulling changes nothing in your Claude config; only `install.py` does. It is tested to update a real v1.0.0 installation:
+unmodified kit files are replaced, files you customized are kept and reported (`--force` to replace, with backup), the managed block is refreshed in place
+(no duplicate import, no duplicate hook), your own content is preserved, and a new backup is made. Installations from before the install record existed (v1.0.0) are updated
+by replacing differing kit files, with a backup.
 
 ## Uninstall / rollback
 ```bash
@@ -122,7 +129,8 @@ Manual steps without Python: [docs/ROLLBACK.md](docs/ROLLBACK.md). A failed inst
 ## Supported platforms and tools
 | Target | Status |
 |---|---|
-| macOS + Claude Code CLI/VS Code | Installer, rollback and update **tested** in isolated sandboxes; runtime loading in the VS Code extension **manual verification required** |
+| macOS + Claude Code CLI | Installer, update (from real v1.0.0), rollback **tested**; Claude Code CLI loading of rules, imports, skill and hook **tested** (offline loader check) |
+| macOS + VS Code extension | **Manual verification required** (the extension was not run) |
 | Linux | Statically validated only (same POSIX code path), not run on Linux |
 | Windows | Statically validated only (hook command, paths with spaces/backslashes); not run on real Windows |
 | Cursor, Codex, Gemini CLI, other assistants | **Not supported**; adapters are only a possible future direction |

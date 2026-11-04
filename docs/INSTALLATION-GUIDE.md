@@ -48,7 +48,7 @@ cd AI-GOVERNANCE-STARTER-KIT
 Keep the folder anywhere you like. You do **not** put it inside `~/.claude`.
 
 ### Option B: ZIP (no Git needed)
-1. Open the [Releases page](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases), download `AI-GOVERNANCE-STARTER-KIT-v1.0.0.zip` (optional: compare it with the published `.sha256` file).
+1. Open the [Releases page](https://github.com/infodhorvath-sudo/AI-GOVERNANCE-STARTER-KIT/releases), download `AI-GOVERNANCE-STARTER-KIT-v1.0.1.zip` (optional: compare it with the published `.sha256` file).
 2. Unzip it. You get a folder named `AI-GOVERNANCE-STARTER-KIT`.
 3. In VS Code: **File → Open Folder…**, choose that folder, then **Terminal → New Terminal**.
 
@@ -79,11 +79,11 @@ Running the installer again is safe: it reports "Nothing to change - already up 
 python3 verify.py
 ```
 This checks the kit itself, runs install/update/rollback tests in a throwaway folder (your config is not touched), then inspects your real installation.
-For a quicker run use `python3 verify.py --no-sandbox`, which is what the picture shows:
+For a quicker run use `python3 verify.py --no-sandbox`, which is what the picture shows. In level 4 the real Claude Code CLI is asked what it loads (works without logging in):
 
 ![Terminal output of verify.py after installation: PASS lines, and a manual verification step for the runtime](assets/terminal-3-verify.svg)
 
-Statuses: `PASS` good, `FAIL` a real problem (see [Troubleshooting](#troubleshooting)), `NOT INSTALLED` the kit is not installed in the target yet,
+If `claude` is not on your PATH, level 4 says `NOT TESTED`; that is fine, use step 6. Statuses: `PASS` good, `FAIL` a real problem (see [Troubleshooting](#troubleshooting)), `NOT INSTALLED` the kit is not installed in the target yet,
 `NOT TESTED` skipped or impossible here, `MANUAL VERIFICATION REQUIRED` only you can confirm it (next steps). Exit code: `0` all good, `1` a failure, `2` not installed.
 
 ## 5. Restart VS Code
@@ -94,7 +94,7 @@ File checks cannot prove that Claude actually *reads* the rules, so test it:
 
 1. Open any project folder in VS Code and open Claude Code (a new conversation).
 2. Ask exactly: **What is the AI Governance canary?**
-3. Expected answer: `AIGOV-KIT-1.0.0-LOADED`
+3. Expected answer: `AIGOV-KIT-1.0.1-LOADED`
 
 ```mermaid
 sequenceDiagram
@@ -103,14 +103,14 @@ sequenceDiagram
   participant Cfg as ~/.claude/CLAUDE.md
   You->>Claude: What is the AI Governance canary?
   Claude->>Cfg: loads the kit's managed block and the rules it imports
-  Claude-->>You: AIGOV-KIT-1.0.0-LOADED
+  Claude-->>You: AIGOV-KIT-1.0.1-LOADED
 ```
 *Illustrative diagram of the expected result, not a screenshot of a real session.*
 
 Optional extra checks: type `/memory` (lists the loaded CLAUDE.md files) or `/context`; type `/` and look for the `ponytail` skill.
 A project's own `CLAUDE.md` works alongside the global rules: add a line like `Project canary code: ZEBRA-1` to it and ask for both canaries.
 Prefer a script? `python3 verify.py --live` runs this check with three tiny Haiku requests on your own login.
-Full checklist: [VERIFY-IN-VSCODE.md](VERIFY-IN-VSCODE.md). If you do not see the expected answer, go to [Troubleshooting](#troubleshooting).
+Full acceptance checklist, including what each test does and does not prove: [VERIFY-IN-VSCODE.md](VERIFY-IN-VSCODE.md). If you do not see the expected answer, go to [Troubleshooting](#troubleshooting).
 
 ## 7. Start a new project (optional)
 Global rules already apply to every project. To also create project-level instructions and a session handoff file:
@@ -129,7 +129,7 @@ python3 verify.py
 ```
 Pulling changes nothing in Claude's configuration; only `install.py` does. It replaces kit-owned files, refreshes the managed block in place (no duplicates),
 keeps your own content, and makes a new backup. ZIP users: unzip the new release and run the same `install.py` commands.
-Do not edit files in `~/.claude/ai-governance/` — they are replaced on update (the previous copy stays in the backup). Put your own rules outside the managed block of `~/.claude/CLAUDE.md` or in your own `~/.claude/rules/` file.
+If you edited a kit file under `~/.claude/ai-governance/`, the update keeps your version and prints a warning (use `--force` to replace it; a backup is made). Put your own rules outside the managed block of `~/.claude/CLAUDE.md` or in your own `~/.claude/rules/` file to avoid any conflict.
 
 ## Uninstall / undo
 ```bash
@@ -145,7 +145,7 @@ No Python? Follow the manual steps in [ROLLBACK.md](ROLLBACK.md). Restart VS Cod
 - **Skipping the restart.** An already-open Claude Code session keeps its old configuration. Start a new session.
 - **Moving the repository into `~/.claude`.** Not needed and not supported; keep it anywhere else.
 - **Using `python3` on Windows.** Use `py -3` (or `python`).
-- **Editing kit-owned files under `~/.claude/ai-governance/`.** The next update replaces them.
+- **Editing kit files under `~/.claude/ai-governance/`.** Allowed, but updates will then keep your version and warn instead of applying the new one. Prefer your own rules file.
 
 ## Troubleshooting
 | Symptom | Cause / fix |
@@ -153,6 +153,7 @@ No Python? Follow the manual steps in [ROLLBACK.md](ROLLBACK.md). Restart VS Cod
 | `python3: command not found` (Windows: "Python was not found") | Install Python 3.8+ from python.org. On Windows use `py -3`; if the Microsoft Store opens, disable the "python" app alias in Settings → Apps → Advanced app settings → App execution aliases, or just use `py -3`. |
 | `git clone` says repository not found / asks for login | Check the URL character by character. The repository is public and needs no login. |
 | `Permission denied` for `./install.sh` | Run `python3 install.py` directly. |
+| `WARNING: ... was modified by you since install; KEPT` | You edited a kit file; the installer protects your edit. Merge the new text by hand, or run `python3 install.py --force` to replace it (backup kept). |
 | `WARNING: skills/ponytail already exists ...` or `rules/... skipped` | You already have a different item with that name. The kit leaves it untouched; the kit's version is simply not installed. Rename yours if you want the kit's. |
 | `WARNING: settings.json is not valid JSON; hook NOT registered` | Your `settings.json` has a syntax error, so the installer left it alone. Fix it, rerun with `--hooks`. |
 | `ERROR: installation failed ...` | The installer undid its partial work automatically; your configuration is as before. Read the message (often a permissions or "not a directory" problem), fix it, rerun. |

@@ -11,8 +11,7 @@
 | Auto-commit / auto-push | **Off by default** | A project enables it in its own `CLAUDE.md` (see the template). Deliberately more conservative than the original system. |
 | Plugins, MCP servers, agents/subagents | **Not installed** | The original system had no portable agents; none are shipped. Nothing is installed from the network. |
 
-The managed block imports the rules by an absolute path generated on *your* machine at install time
-(nothing machine-specific ships in the kit). Imports are limited to 4 levels; the kit uses 1.
+The managed block imports the rules with the documented `~/` form (`@~/.claude/ai-governance/GLOBAL-RULES.md`); for a config folder outside your home it uses an absolute path generated on your machine with spaces escaped (nothing machine-specific ships in the kit). Absolute paths with unescaped spaces silently fail to load, which is why the installer never writes them. Imports are limited to 4 levels; the kit uses 1.
 User-level imports need no approval dialog (documented).
 
 Nothing here is assumed to work because files were copied: `verify.py` checks

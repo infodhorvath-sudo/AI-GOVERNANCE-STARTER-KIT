@@ -2,12 +2,16 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [1.0.1] - 2026-11-04
+### Fixed
+- **Rules silently not loaded when the Claude config path contains a space** (typical for Windows profile folders that contain a space): the managed `@import` was an absolute path and a space ended it. The import now uses the documented `~/` form under the home folder (verified in Claude Code with spaces and Unicode) and a backslash-escaped absolute path elsewhere. Existing installs are migrated in place by the next `install.py`.
+- Updates no longer overwrite files you customized: the installer records what it installed (`ai-governance/.kit-state.json`); a changed file is kept and reported, `--force` replaces it (backup kept); files you added inside kit folders are never removed; files dropped by a newer release are removed only if unmodified.
+- Installer messages are accurate ("refreshed" vs "added", undo-record wording).
 ### Added
-- `docs/INSTALLATION-GUIDE.md`: illustrated step-by-step guide (clone in VS Code or ZIP, expected output, troubleshooting, update, uninstall) and `docs/assets/` terminal renderings of real output.
-- README "Get started in 4 steps".
+- `verify.py` level 4 now asks the real Claude Code CLI what it loads (`/context`, offline, no login) and whether the hook fires; sandbox scenarios for customization, unusual paths (spaces/Unicode) and a real-Claude-Code load test.
+- `docs/INSTALLATION-GUIDE.md`, `docs/assets/` (renderings of real terminal output), README "Get started in 4 steps", acceptance checklist in `docs/VERIFY-IN-VSCODE.md`.
 ### Changed
-- Installer wording only: clearer dry-run/install messages (no behavior change).
+- Version and canary are `1.0.1` / `AIGOV-KIT-1.0.1-LOADED`. The canary is the installed-kit version marker, so after an update it also proves the new rules were loaded.
 
 ## [1.0.0] - 2026-11-04
 First public release.

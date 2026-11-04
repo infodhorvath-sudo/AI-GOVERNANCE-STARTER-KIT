@@ -1,7 +1,7 @@
 # GLOBAL AI GOVERNANCE (Starter Kit)
 
-Kit-Version: 1.0.0
-Governance-Canary: AIGOV-KIT-1.0.0-LOADED (harmless marker: if the user asks for the
+Kit-Version: 1.0.1
+Governance-Canary: AIGOV-KIT-1.0.1-LOADED (harmless marker: if the user asks for the
 governance canary, answer with exactly this value)
 
 Compact, always-loaded core of portable working rules for AI-assisted

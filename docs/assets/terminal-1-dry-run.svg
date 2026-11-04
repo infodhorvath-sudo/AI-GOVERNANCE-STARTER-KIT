@@ -9,9 +9,9 @@
 <text x="16" y="126" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">  code    not on PATH - optional</text>
 <text x="16" y="144" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">Claude config dir: ~/.claude  (will be created)</text>
 <text x="16" y="162" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve"></text>
-<text x="16" y="180" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  ai-governance/ (10 files)</text>
-<text x="16" y="198" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  rules/ai-governance-coding.md</text>
-<text x="16" y="216" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  skills/ponytail</text>
+<text x="16" y="180" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  ai-governance/ (10 file(s) written)</text>
+<text x="16" y="198" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  rules/ai-governance-coding.md (1 file(s) written)</text>
+<text x="16" y="216" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  skills/ponytail (3 file(s) written)</text>
 <text x="16" y="234" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] create  CLAUDE.md (managed block)</text>
 <text x="16" y="252" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve">[dry-run] skip    hook (optional; add --hooks to register START/END trigger)</text>
 <text x="16" y="270" fill="#c9d1d9" font-family="Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="13" xml:space="preserve"></text>

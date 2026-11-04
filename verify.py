@@ -133,8 +133,8 @@ def package():
 
 
 # ---------------------------------------------------------------- shared installed-state check
-def installed_state(cd, expect_hook=None):
-    imp_re = re.compile(r"^@(\S+)", re.M)
+def installed_state(cd, expect_hook=None, home=None):
+    imp_re = re.compile(r"^@((?:\\ |\S)+)", re.M)
     md = cd / "CLAUDE.md"
     text = md.read_text(encoding="utf-8") if md.exists() else ""
     check(text.count("BEGIN AI-GOVERNANCE-STARTER-KIT") == 1 and text.count("END AI-GOVERNANCE-STARTER-KIT") == 1,
@@ -142,7 +142,9 @@ def installed_state(cd, expect_hook=None):
     imports = imp_re.findall(text)
     kit_imp = [i for i in imports if i.endswith("ai-governance/GLOBAL-RULES.md")]
     check(len(kit_imp) == 1, "exactly one kit @import in CLAUDE.md")
-    unresolved = [i for i in imports if not Path(os.path.expanduser(i)).exists()]
+    h = Path(home) if home else Path.home()
+    res = lambda i: (h / i[2:]) if i.startswith("~/") else Path(i.replace("\\ ", " "))
+    unresolved = [i for i in imports if not res(i).exists()]
     check(not unresolved, "every @import in CLAUDE.md resolves to an existing file %s" % (unresolved or ""))
     gr = cd / "ai-governance" / "GLOBAL-RULES.md"
     check(gr.exists() and CANARY in gr.read_text(encoding="utf-8"), "GLOBAL-RULES.md installed (canary %s)" % CANARY)
@@ -280,6 +282,7 @@ def sandbox():
         print(" I. update over an earlier installation")
         up = tmp / "upd"
         seed_config(up)
+        pristine = snapshot(up)
         inst(up, "--hooks")
         gr = up / "ai-governance" / "GLOBAL-RULES.md"
         gr.write_text("Kit-Version: 0.9 (older)\n")
@@ -287,6 +290,11 @@ def sandbox():
         (up / "rules" / "ai-governance-coding.md").write_text("# old AI Governance Starter Kit rule\n")
         with open(up / "CLAUDE.md", "a") as f:
             f.write("\nMy later personal rule.\n")
+        stp = up / "ai-governance" / ".kit-state.json"  # what an older release would have recorded
+        st = json.loads(stp.read_text())
+        for k in ("ai-governance/GLOBAL-RULES.md", "rules/ai-governance-coding.md"):
+            st["files"][k] = hashlib.sha256((up / k).read_bytes()).hexdigest()
+        stp.write_text(json.dumps(st, indent=1, sort_keys=True) + "\n")
         old = snapshot(up)
         r = inst(up, "--hooks")
         t = (up / "CLAUDE.md").read_text()
@@ -297,6 +305,87 @@ def sandbox():
         check(len(list((up / "ai-governance-kit-backups").glob("*/manifest.json"))) == 2, "update made a new backup of what it replaced")
         r = inst(up, "--rollback")
         check(r.returncode == 0 and snapshot(up) == old, "rollback of the update restores the previous installation exactly")
+        r = inst(up, "--rollback")
+        now = snapshot(up)
+        t = (up / "CLAUDE.md").read_text()
+        check(r.returncode == 0 and {k: v for k, v in now.items() if k != "CLAUDE.md"} == {k: v for k, v in pristine.items() if k != "CLAUDE.md"}
+              and t.startswith("# My own rules\nBe nice.\n") and "My later personal rule." in t and "AI-GOVERNANCE-STARTER-KIT" not in t,
+              "a second rollback walks back to the state before the kit (full uninstall; your later CLAUDE.md line is kept)")
+
+        print(" J. user customization of kit-owned files")
+        cu = tmp / "custom"
+        seed_config(cu)
+        inst(cu)
+        gr = cu / "ai-governance" / "GLOBAL-RULES.md"
+        mine = gr.read_text() + "\nMY OWN CUSTOM RULE\n"
+        gr.write_text(mine)
+        (cu / "ai-governance" / "my-notes.md").write_text("my extra file\n")
+        before = snapshot(cu)
+        r = inst(cu)
+        check(r.returncode == 0 and gr.read_text() == mine and "modified by you" in r.stdout,
+              "customized kit file is KEPT and the conflict is reported (not silently overwritten)")
+        check((cu / "ai-governance" / "my-notes.md").exists(), "files the user added inside kit folders are never removed")
+        r = inst(cu, "--force")
+        check(r.returncode == 0 and "MY OWN CUSTOM RULE" not in gr.read_text(), "--force replaces the customized file")
+        r = inst(cu, "--rollback")
+        check(r.returncode == 0 and gr.read_text() == mine, "rollback after --force restores the customized file (it was backed up)")
+        (cu / "ai-governance" / ".kit-state.json").unlink()
+        gr.write_text("legacy tampered\n")
+        r = inst(cu)
+        check(r.returncode == 0 and CANARY in gr.read_text(), "install without an install record (pre-1.0.1 install) replaces files, with a backup")
+
+        print(" N. rollback after the user edited files since install")
+        ed = tmp / "edited"
+        seed_config(ed)
+        before = snapshot(ed)
+        inst(ed, "--hooks")
+        with open(ed / "CLAUDE.md", "a") as f:
+            f.write("\nEdited after install.\n")
+        c = json.loads((ed / "settings.json").read_text())
+        c["theme"] = "dark-later"
+        (ed / "settings.json").write_text(json.dumps(c, indent=2))
+        r = inst(ed, "--rollback")
+        t = (ed / "CLAUDE.md").read_text()
+        c = json.loads((ed / "settings.json").read_text())
+        check(r.returncode == 0 and "Edited after install." in t and "AI-GOVERNANCE-STARTER-KIT" not in t and t.startswith("# My own rules"),
+              "rollback keeps your later CLAUDE.md edits and removes only the kit's block")
+        check(c.get("theme") == "dark-later" and c["model"] == "x" and c["hooks"]["Stop"][0]["hooks"][0]["command"] == "echo hi"
+              and "UserPromptSubmit" not in c["hooks"], "rollback keeps your later settings.json edits and removes only the kit's hook")
+        check(not (ed / "ai-governance").exists() and not (ed / "skills" / "ponytail").exists(), "kit-owned folders are removed")
+
+        print(" K. unusual paths (spaces, Unicode)")
+        for name in ("home with space", "h\u00f3me-\u65e5\u672c-\u0434\u043e\u043c"):
+            hm = tmp / name
+            hm.mkdir()
+            env = dict(os.environ, HOME=str(hm), USERPROFILE=str(hm))
+            env.pop("CLAUDE_CONFIG_DIR", None)
+            r = subprocess.run([PY, str(KIT / "install.py"), "--hooks"], capture_output=True, text=True, env=env)
+            md = (hm / ".claude" / "CLAUDE.md").read_text(encoding="utf-8") if (hm / ".claude" / "CLAUDE.md").exists() else ""
+            check(r.returncode == 0 and "@~/.claude/ai-governance/GLOBAL-RULES.md" in md and str(hm) not in md,
+                  "default dir under a home with %s: documented ~/ import, no machine path in CLAUDE.md" % ("spaces" if " " in name else "Unicode"))
+            installed_state(hm / ".claude", expect_hook=True, home=hm)
+            cmd = json.loads((hm / ".claude" / "settings.json").read_text())["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"]
+            if shutil.which(cmd.split()[0]):
+                p = subprocess.run(cmd, shell=True, input='{"prompt":"start"}', capture_output=True, text=True)
+                check("SESSION_LIFECYCLE_START_TRIGGER" in p.stdout, "hook command string works through a shell with that path")
+            else:
+                report("NOT TESTED", "hook command run through a shell (%s not on PATH)" % cmd.split()[0])
+        odd = tmp / "x y" / ".claude"
+        inst(odd)
+        t = (odd / "CLAUDE.md").read_text()
+        check("x\\ y" in t, "config dir outside home with a space: path is backslash-escaped in the @import")
+        installed_state(odd, expect_hook=False)
+
+        print(" M. real Claude Code CLI loads a kit installed under a home folder with a space")
+        if shutil.which("claude"):
+            hm = tmp / "home with space"
+            env = {"HOME": str(hm), "USERPROFILE": str(hm)}
+            hm2 = hm / ".claude"
+            if hm2.exists():
+                loader_check(hm2, extra_env=env, label="[space in path] ")
+                hook_check(hm2, extra_env=env, label="[space in path] ")
+        else:
+            report("NOT TESTED", "real Claude Code loader (claude CLI not on PATH)")
 
         print(" H. cross-platform handling (Windows: STATIC validation only, not executed on Windows)")
         spec = importlib.util.spec_from_file_location("kit_install", KIT / "install.py")
@@ -330,6 +419,15 @@ def sandbox():
 
 
 # ---------------------------------------------------------------- 3. target
+def has_hook(cd):
+    try:
+        cfg = json.loads((cd / "settings.json").read_text(encoding="utf-8"))
+        return any("ai-governance/hooks/session-lifecycle-trigger.py" in h.get("command", "").replace("\\", "/")
+                   for g in cfg.get("hooks", {}).get("UserPromptSubmit", []) for h in g.get("hooks", []))
+    except Exception:
+        return False
+
+
 def target(cd):
     print("\n[3] TARGET INSTALLATION (%s)" % cd)
     md = cd / "CLAUDE.md"
@@ -343,12 +441,73 @@ def target(cd):
 
 
 # ---------------------------------------------------------------- 4. runtime
+def loader_check(cd, extra_env=None, label=""):
+    """Ask the real Claude Code CLI what it loads (`/context`; needs no login and no model call)."""
+    env = dict(os.environ, **(extra_env or {}))
+    if not extra_env and cd != (Path.home() / ".claude").resolve():
+        env["CLAUDE_CONFIG_DIR"] = str(cd)
+    tmp = Path(tempfile.mkdtemp(prefix="kit-loader-"))
+    try:
+        (tmp / "CLAUDE.md").write_text("# loader check project\nProject canary code: ZEBRA-LOADER\n")
+        r = subprocess.run(["claude", "-p", "/context"], cwd=str(tmp), env=env, stdin=subprocess.DEVNULL,
+                           capture_output=True, text=True, timeout=90)
+        rows = [l for l in r.stdout.splitlines() if l.startswith("| User |") or l.startswith("| Project |")]
+        if not rows:
+            return report("NOT TESTED", "%sunrecognised `claude -p /context` output (Claude Code version differs)" % label)
+        txt = "\n".join(rows + [l for l in r.stdout.splitlines() if l.startswith("| ponytail |")])
+        check("| User |" in txt and "/CLAUDE.md" in txt, "%sClaude Code loads the user-level CLAUDE.md" % label)
+        check("ai-governance/GLOBAL-RULES.md" in txt, "%sClaude Code resolved the @import and loads GLOBAL-RULES.md" % label)
+        check("rules/ai-governance-coding.md" in txt, "%sClaude Code loads the user-level rule" % label)
+        check("| Project |" in txt, "%sproject CLAUDE.md loads alongside the global rules" % label)
+        check(re.search(r"\| ponytail \| User \|", r.stdout) is not None, "%sskill ponytail is discovered (source: User)" % label)
+        return True
+    except Exception as e:
+        return report("NOT TESTED", "%sloader check could not run: %s" % (label, e))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def hook_check(cd, extra_env=None, label=""):
+    """Run the real Claude Code CLI on the prompt `start` and watch for the hook's output."""
+    env = dict(os.environ, **(extra_env or {}))
+    if not extra_env and cd != (Path.home() / ".claude").resolve():
+        env["CLAUDE_CONFIG_DIR"] = str(cd)
+    tmp = tempfile.mkdtemp(prefix="kit-hook-")
+    seen = False
+    try:
+        p = subprocess.Popen(["claude", "-p", "start", "--output-format", "stream-json", "--verbose",
+                              "--include-hook-events", "--model", "haiku", "--max-turns", "1"],
+                             cwd=tmp, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                             stderr=subprocess.DEVNULL, text=True)
+        t0 = __import__("time").time()
+        for line in p.stdout:
+            if "SESSION_LIFECYCLE_START_TRIGGER" in line and "hook_response" in line:
+                seen = True
+                break
+            if __import__("time").time() - t0 > 60:
+                break
+        p.terminate()
+        p.wait(timeout=10)
+    except Exception as e:
+        return report("NOT TESTED", "%shook run could not execute: %s" % (label, e))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return check(seen, "%sthe optional START/END hook fires inside Claude Code on `start`" % label)
+
+
 def runtime(cd, live, installed):
     print("\n[4] RUNTIME INTEGRATION WITH CLAUDE CODE")
     if not installed:
         return report("NOT TESTED", "kit not installed in the target")
+    if shutil.which("claude"):
+        print("  Claude Code CLI loader check (offline: asks Claude Code what it loads; no login, no model call):")
+        loader_check(cd)
+        if has_hook(cd):
+            hook_check(cd)
+    else:
+        report("NOT TESTED", "`claude` CLI not on PATH; loader check skipped (the VS Code extension bundles it, use the manual check)")
     if not live:
-        report("MANUAL VERIFICATION REQUIRED", "start a NEW Claude Code session (restart VS Code) and ask:")
+        report("MANUAL VERIFICATION REQUIRED", "VS Code extension and model behavior: start a NEW Claude Code session and ask:")
         print("      \"What is the AI Governance canary?\"   -> expect: %s" % CANARY)
         print("      (details: docs/VERIFY-IN-VSCODE.md, or run: python3 verify.py --live)")
         return
